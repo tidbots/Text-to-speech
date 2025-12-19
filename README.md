@@ -15,9 +15,20 @@
 ```
 python3 say-m command.txt
 ```
+```
+ python3 say-m command.txt --voice Samantha --rate 180
+```
+声の種類はシステム設定→アクセシビリティ→読み上げコンテンツ→システムの声で確認
+
 
 
 ## Ubuntuの場合
 ```
+sudo apt update
+sudo apt install -y espeak-ng
 python3 say-u command.txt
+```
+速度変更：
+```
+python3 say-u command.txt --rate 150
 ```

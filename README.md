@@ -23,6 +23,7 @@ python3 say-m command.txt
 
 
 ## Ubuntuの場合
+espeak-ngを使う（品質は悪いが手軽なので・・・）
 ```
 sudo apt update
 sudo apt install -y espeak-ng
@@ -32,3 +33,5 @@ python3 say-u command.txt
 ```
 python3 say-u command.txt --rate 150
 ```
+
+## Ubuntuで比較的高品質なTTS（それでもまだmacのsayには敵わない・・・）

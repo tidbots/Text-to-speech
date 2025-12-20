@@ -9,62 +9,58 @@ import termios
 import tty
 
 
-def getch() -> str:
-    """1文字だけキー入力を取得（Enter不要）"""
+def getkey() -> str:
+    """
+    1キー取得
+    通常キー: ' ', 'q'
+    矢印キー: 'LEFT', 'RIGHT'
+    """
     fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
+    old = termios.tcgetattr(fd)
     try:
         tty.setraw(fd)
-        return sys.stdin.read(1)
+        ch1 = sys.stdin.read(1)
+        if ch1 == "\x1b":  # ESC
+            ch2 = sys.stdin.read(1)
+            if ch2 == "[":
+                ch3 = sys.stdin.read(1)
+                if ch3 == "D":
+                    return "LEFT"
+                elif ch3 == "C":
+                    return "RIGHT"
+            return "ESC"
+        return ch1
     finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 
-def speak_lines(path: Path, voice: str, rate_wpm: int | None):
+def load_sentences(path: Path) -> list[str]:
     if not path.exists():
         print(f"File not found: {path}", file=sys.stderr)
         sys.exit(1)
-
-    # espeak-ng command
-    cmd_base = ["espeak-ng", "-v", voice]
-    if rate_wpm is not None:
-        # espeak-ng は WPM ではなく speed (default 175)
-        cmd_base += ["-s", str(rate_wpm)]
-
-    print("=== 操作方法 ===")
-    print("Space : 次の文を読む")
-    print("q     : 終了")
-    print("================\n")
-
     with path.open("r", encoding="utf-8") as f:
-        for i, raw in enumerate(f, start=1):
-            line = raw.strip()
-            if not line:
-                continue
+        return [line.strip() for line in f if line.strip()]
 
-            print(f"[{i}] {line}")
-            print("→ Space を押してください", end="", flush=True)
 
-            while True:
-                key = getch()
-                if key == " ":
-                    print("\r", end="")
-                    subprocess.run(cmd_base + [line])
-                    break
-                elif key.lower() == "q":
-                    print("\n終了します。")
-                    sys.exit(0)
+def speak(sentence: str, voice: str, rate: int):
+    # stdout/stderr を捨ててターミナル表示を乱さない
+    subprocess.run(
+        ["espeak-ng", "-v", voice, "-s", str(rate), sentence],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Read an English text file aloud on Ubuntu. Press SPACE to go to the next sentence."
+        description="Ubuntu TTS reader with arrow-key navigation (English only)."
     )
     parser.add_argument("file", help="Text file (1 sentence per line)")
     parser.add_argument(
         "--voice",
         default="en-us",
-        help="espeak-ng voice (default: en-us)"
+        help="espeak-ng English voice (default: en-us)"
     )
     parser.add_argument(
         "--rate",
@@ -74,9 +70,40 @@ def main():
     )
     args = parser.parse_args()
 
-    speak_lines(Path(args.file), args.voice, args.rate)
+    sentences = load_sentences(Path(args.file))
+    if not sentences:
+        print("No sentences found.", file=sys.stderr)
+        sys.exit(1)
+
+    idx = 0
+
+    print("=== 操作方法 ===")
+    print("← : 前の文")
+    print("→ : 次の文")
+    print("Space : 読み上げ")
+    print("q : 終了")
+    print("================\n")
+    print(f"Voice: {args.voice}  Rate: {args.rate}\n")
+
+    while True:
+        print(
+            f"\r[{idx+1}/{len(sentences)}] {sentences[idx]}      ",
+            end="",
+            flush=True,
+        )
+
+        key = getkey()
+
+        if key == "RIGHT" and idx < len(sentences) - 1:
+            idx += 1
+        elif key == "LEFT" and idx > 0:
+            idx -= 1
+        elif key == " ":
+            speak(sentences[idx], args.voice, args.rate)
+        elif isinstance(key, str) and key.lower() == "q":
+            print("\n終了します。")
+            break
 
 
 if __name__ == "__main__":
     main()
-

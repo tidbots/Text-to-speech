@@ -37,7 +37,7 @@ python3 say-u command.txt --rate 150
 ```
 
 ## Ubuntuで比較的高品質なTTS（それでもまだmacのsayには敵わない・・・）
-Coqui TTS を使う
+### Coqui TTS を使う
 
 - GPU環境がインストールされていればGPUを使用
 - それ以外の場合CPUモード
@@ -71,4 +71,10 @@ python3 say-TTS.py command.txt --no_prefetch
 ```
 rm -rf .tts_cache
 ```
+
+### XTTS v2版
+- モデル：tts_models/multilingual/multi-dataset/xtts_v2
+- GPU 自動使用（--cpu を付けた時だけCPU）
+- --warmup all で 全行を .tts_cache_xtts/ に事前生成
+- speaker は --speaker_wav（声クローン）優先、無ければ --speaker_idx
 

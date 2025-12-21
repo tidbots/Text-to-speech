@@ -39,6 +39,10 @@ python3 say-u command.txt --rate 150
 ## Ubuntuで比較的高品質なTTS（それでもまだmacのsayには敵わない・・・）
 Coqui TTS を使う
 
+- GPU環境がインストールされていればGPUを使用
+- それ以外の場合CPUモード
+- --cpu フラグでCPUモードに固定
+  
 ```
 python3 say-TTS.py command.txt
 ```

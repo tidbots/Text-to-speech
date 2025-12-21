@@ -78,3 +78,16 @@ rm -rf .tts_cache
 - --warmup all で 全行を .tts_cache_xtts/ に事前生成
 - speaker は --speaker_wav（声クローン）優先、無ければ --speaker_idx
 
+内蔵話者（簡単）
+```
+python3 say-xtts2.py command.txt --warmup all --lang en --speaker_idx "Ana Florence"
+```
+声クローン
+
+```
+python3 say-xtts2.py command.txt --warmup all --lang en --speaker_wav ./myvoice.wav
+```
+
+
+
+```

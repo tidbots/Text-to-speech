@@ -43,6 +43,16 @@ Coqui TTS を使う
 python3 say-TTS.py command.txt
 ```
 
+起動時に全部生成（おすすめ）
+```
+python3 say-cache.py command.txt --warmup all
+```
+
+CPU固定
+```
+python3 say-cache.py command.txt --warmup all --cpu
+```
+
 キャッシュ先を変える：
 ```
 python3 say-TTS.py command.txt --cache_dir cache_wavs

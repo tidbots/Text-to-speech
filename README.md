@@ -37,4 +37,6 @@ python3 say-u command.txt --rate 150
 ```
 
 ## Ubuntuで比較的高品質なTTS（それでもまだmacのsayには敵わない・・・）
+Coqui TTS を使う
+
 

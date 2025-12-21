@@ -39,4 +39,22 @@ python3 say-u command.txt --rate 150
 ## Ubuntuで比較的高品質なTTS（それでもまだmacのsayには敵わない・・・）
 Coqui TTS を使う
 
+```
+python3 say-TTS.py command.txt
+```
+
+キャッシュ先を変える：
+```
+python3 say-TTS.py command.txt --cache_dir cache_wavs
+```
+
+先読みを止める：
+```
+python3 say-TTS.py command.txt --no_prefetch
+```
+
+キャッシュ削除：
+```
+rm -rf .tts_cache
+```
 
